@@ -85,6 +85,18 @@ client.on('messageCreate', async (message) => {
     else if(message.content === 'raid'){
         message.reply(`***You are raiding ${place}***`);
     }
+    else if (message.content === 'bank') {
+        const userId = message.author.id;
+
+        try {
+            const response = await axios.get(`http://localhost:5000/getUserBankInfo/${userId}`);
+            const { pepos, gold } = response.data;
+            message.reply(`***You have ${pepos} pepos and ${gold} gold remaining***`);
+        } catch (error) {
+            console.error('Error fetching user bank info:', error);
+            message.reply('***An error occurred while fetching your bank info.***');
+        }
+    }
 });
 
 client.login(process.env.TOKEN);

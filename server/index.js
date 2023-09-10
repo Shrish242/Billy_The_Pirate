@@ -62,6 +62,23 @@ app.post('/storeUserID', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+app.get('/getUserBankInfo/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await User.findOne({ userid: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const { pepos, gold } = user;
+        res.status(200).json({ pepos, gold });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 app.listen(5000, () => {
