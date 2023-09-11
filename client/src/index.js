@@ -14,7 +14,34 @@ const client = new Client({
     ],
 });
 
+        const pepos = Math.floor(Math.random() * 10);
+        const gold = Math.floor(Math.random() * 5);
+        const xp = Math.floor(Math.random() * 200);
+        const level = 1;
+
 const place = 'Port Royal';
+const place1 = 'Sampania';
+const place2 = 'Tortuga';
+const place3 = 'Padres Del Fuego';
+const place4 = 'Kings Landing';
+const place5 = 'Winterfell';
+const place6 = 'Skyfloor';
+const place7 = 'The Wall';
+const place8 = 'The Heaven';
+const place9 = 'The Hell';
+const place10 = 'The Final Destination';
+const place11 = 'The Ending Cave';
+
+const character1 = 'Bug De La Muerte';
+const character2 = 'Alvin The Chipmunk';
+const character3 = 'The Black Shadow';
+const character4 = 'The hunted Pirate';
+const character5 = 'Doffy de Quiny';
+const character6 = 'The hound';
+const character7 = 'Tyrion';
+const character8 = 'Alessandro Lucca';
+const character9 = 'Sekhio The Master';
+const character10 = 'Zoro The Pirate Hunter';
 
 // Define a cooldown map to keep track of user cooldowns
 const cooldowns = new Map();
@@ -62,19 +89,17 @@ client.on('messageCreate', async (message) => {
         // Set the current time as the last hunt time
         cooldowns.set(message.author.id, now);
 
-        const pepos = Math.floor(Math.random() * 10);
-        const gold = Math.floor(Math.random() * 5);
-
         try {
             await axios.post('http://localhost:5000/storeUserID', {
                 userId: message.author.id,
                 username: message.author.username,
                 pepos,
                 gold,
+                xp,
             });
 
             message.reply('***You are hunting for treasure***');
-            message.reply(`***You found ${pepos} pepos and ${gold} gold***`);
+            message.reply(`***You found ${pepos} pepos and ${gold} gold and increased your xp by ${xp }***`);
         } catch (error) {
             console.error('Error sending hunt results to backend:', error);
             message.reply('***An error occurred while processing your request.***');
@@ -90,13 +115,61 @@ client.on('messageCreate', async (message) => {
 
         try {
             const response = await axios.get(`http://localhost:5000/getUserBankInfo/${userId}`);
-            const { pepos, gold } = response.data;
-            message.reply(`***You have ${pepos} pepos and ${gold} gold remaining***`);
+            const { pepos, gold , xp } = response.data;
+            message.reply(`***You have ${pepos} pepos and ${gold} gold in your vault with ${xp}xp***`);
         } catch (error) {
             console.error('Error fetching user bank info:', error);
             message.reply('***An error occurred while fetching your bank info.***');
         }
     }
+    else if (message.content === 'fight'){
+        const fight1 = Math.floor(Math.random() * 10);
+        message.reply(`***⚔️The fighter is getting ready⚔️***`);
+        if(fight1 == 1){
+            message.reply(`***You are fighting ${character1}***`);
+        }
+        else if (fight1 == 2){
+            message.reply(`***You are fighting ${character2}***`);
+        }
+        else if (fight1 == 3){
+            message.reply(`***You are fighting ${character3}***`);
+        }
+        else if (fight1 == 4){
+            message.reply(`***You are fighting ${character4}***`);
+        }
+        else if (fight1 == 5){
+            message.reply(`***You are fighting ${character5}***`);
+        }
+        else if (fight1 == 6){
+            message.reply(`***You are fighting ${character6}***`);
+        }
+        else if (fight1 == 7){
+            message.reply(`***You are fighting ${character7}***`);
+        }
+        else if (fight1 == 8){
+            message.reply(`***You are fighting ${character8}***`);
+        }
+        else if (fight1 == 9){
+            message.reply(`***You are fighting ${character9}***`);
+        }
+        else if (fight1 == 10){
+            message.reply(`***You are fighting ${character10}***`);
+        }
+    }
+
+    const userId = message.author.id;
+    try {
+        const response = await axios.get(`http://localhost:5000/getUserBankInfo/${userId}`);
+        const {  xp } = response.data;
+        if(xp >= 500){
+            message.reply(`***You reached level ${level + 1}***`);
+        }
+    } catch (error) {
+        console.error('Error fetching user bank info:', error);
+        message.reply('***An error occurred while fetching your bank info.***');
+    }
+    
 });
+
 
 client.login(process.env.TOKEN);

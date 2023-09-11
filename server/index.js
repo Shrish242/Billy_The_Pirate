@@ -23,15 +23,16 @@ const userSchema = new mongoose.Schema({
     userid: String,
     username: String,
     gold: { type: Number, default: 0 }, // Initialize default values
-    pepos: { type: Number, default: 0 } // Initialize default values
+    pepos: { type: Number, default: 0 }, // Initialize default values
+    xp : { type: Number, default: 0 }
 });
 
 const User = mongoose.model('User', userSchema);
 
 // Create a route to handle incoming data from the Discord bot
 app.post('/storeUserID', async (req, res) => {
-    const { userId, username, gold, pepos } = req.body;
-    console.log(userId, username, gold, pepos);
+    const { userId, username, gold, pepos , xp } = req.body;
+    console.log(userId, username, gold, pepos , xp);
 
     try {
         let user = await User.findOne({ userid: userId });
@@ -41,14 +42,16 @@ app.post('/storeUserID', async (req, res) => {
                 userid: userId,
                 username: username,
                 gold: gold,
-                pepos: pepos
+                pepos: pepos,
+                xp : xp
             });
         } else {
             user.username = username;
 
-            if (!isNaN(gold) && !isNaN(pepos)) {
+            if (!isNaN(gold) && !isNaN(pepos) && !isNaN(xp)) {
                 user.gold += gold;
                 user.pepos += pepos;
+                user.xp += xp;
             } else {
                 // Handle invalid data here, such as returning an error response.
                 return res.status(400).json({ message: 'Invalid gold or pepos value' });
@@ -72,8 +75,8 @@ app.get('/getUserBankInfo/:userId', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const { pepos, gold } = user;
-        res.status(200).json({ pepos, gold });
+        const { pepos, gold, xp } = user;
+        res.status(200).json({ pepos, gold , xp });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
