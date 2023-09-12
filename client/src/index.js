@@ -1,5 +1,6 @@
-require('dotenv').config();
-const axios = require('axios').default;
+const dotenv = require('dotenv');
+dotenv.config();
+const axios = require('axios');
 const { Client, GatewayIntentBits } = require('discord.js');
 
 const client = new Client({
@@ -14,34 +15,96 @@ const client = new Client({
     ],
 });
 
-        const pepos = Math.floor(Math.random() * 10);
-        const gold = Math.floor(Math.random() * 5);
-        const xp = Math.floor(Math.random() * 200);
-        const level = 1;
+const pepos = Math.floor(Math.random() * 10);
+const gold = Math.floor(Math.random() * 5);
+let xp = Math.floor(Math.random() * 200);
+let level = 1;
 
-const place = 'Port Royal';
-const place1 = 'Sampania';
-const place2 = 'Tortuga';
-const place3 = 'Padres Del Fuego';
-const place4 = 'Kings Landing';
-const place5 = 'Winterfell';
-const place6 = 'Skyfloor';
-const place7 = 'The Wall';
-const place8 = 'The Heaven';
-const place9 = 'The Hell';
-const place10 = 'The Final Destination';
-const place11 = 'The Ending Cave';
+const places = [
+    'Port Royal',
+    'Sampania',
+    'Tortuga',
+    'Padres Del Fuego',
+    'Kings Landing',
+    'Winterfell',
+    'Skyfloor',
+    'The Wall',
+    'The Heaven',
+    'The Hell',
+    'The Final Destination',
+    'The Ending Cave',
+];
 
-const character1 = 'Bug De La Muerte';
-const character2 = 'Alvin The Chipmunk';
-const character3 = 'The Black Shadow';
-const character4 = 'The hunted Pirate';
-const character5 = 'Doffy de Quiny';
-const character6 = 'The hound';
-const character7 = 'Tyrion';
-const character8 = 'Alessandro Lucca';
-const character9 = 'Sekhio The Master';
-const character10 = 'Zoro The Pirate Hunter';
+const characters = [
+    'Bug De La Muerte',
+    'Alvin The Chipmunk',
+    'The Black Shadow',
+    'The hunted Pirate',
+    'Doffy de Quiny',
+    'The hound',
+    'Tyrion',
+    'Alessandro Lucca',
+    'Sekhio The Master',
+    'Zoro The Pirate Hunter',
+];
+
+const items = [
+    'Meat',
+    'A ship',
+    'A boat',
+    'A 5 storey ship',
+    'A 10 storey ship',
+]
+
+const weapons = [
+    'A cannon',
+    'A rifle',
+    'Black Sword',
+    'Delina Sword',
+    'Axe',
+    'Bow & Arrow',
+    'Knife',
+]
+
+const crewmember = [
+    'A crew-member: Sworsdman',
+    'A crew-member: Sniper',
+    'A crew-member: Cook',
+    'A crew-member: Doctor',
+    'A crew-member: Navigator',
+    'A crew-member: Mechanic',
+    'A crew-member: Helsmann',
+    'A crew-member: Fighter',
+    'A crew-member: Pet',
+]
+
+const devilfruit = [
+    'A devil fruit: Gomu Gomu no Mi : Model Sun God',
+    'A devil fruit: Bara Bara no Mi : Model Bear',
+    'A devil fruit: Sube Sube no Mi : Model Slippery',
+    'A devil fruit: Bomu Bomu no Mi : Model Bomb', 
+    'A devil fruit: Kilo Kilo no Mi : Model Ton',
+    'A devil fruit: Hana Hana no Mi : Sprout',
+    'A devil fruit: Doru Doru no Mi : Wax',
+    'A devil fruit: Baku Baku no Mi : Model Alpaca',
+    'A devil fruit: Mane Mane no Mi : Clone',
+    'A devil fruit: Toge Toge no Mi : Spikes',
+]
+
+const rareitems = [
+    'A final Map',
+    'A Map Reader',
+    'Healing Potion',
+    'A treasure',
+    '100M chest',
+
+]
+
+const rarestofall =[
+    'Final Treasure',
+]
+
+
 
 // Define a cooldown map to keep track of user cooldowns
 const cooldowns = new Map();
@@ -70,7 +133,7 @@ client.on('messageCreate', async (message) => {
             message.reply(`***Welcome ${username} to our adventure!***`);
         } catch (error) {
             console.error('Error sending userId and username to backend:', error);
-            message.reply('***You are already and pirate.***');
+            message.reply('***You are already a pirate.***');
         }
     } else if (message.content === 'hunt') {
         const now = Date.now();
@@ -78,7 +141,7 @@ client.on('messageCreate', async (message) => {
 
         if (cooldowns.has(message.author.id)) {
             const lastTime = cooldowns.get(message.author.id);
-            const timeRemaining = cooldownTime - (now - lastTime);
+            const timeRemaining = cooldownTime - (now - (lastTime || 0));
 
             if (timeRemaining > 0) {
                 message.reply(`***You can't hunt again yet. Please wait ${(timeRemaining / (60 * 1000)).toFixed(1)} minutes.***`);
@@ -99,77 +162,63 @@ client.on('messageCreate', async (message) => {
             });
 
             message.reply('***You are hunting for treasure***');
-            message.reply(`***You found ${pepos} pepos and ${gold} gold and increased your xp by ${xp }***`);
+            message.reply(`***You found ${pepos} pepos and ${gold} gold and increased your xp by ${xp}***`);
         } catch (error) {
             console.error('Error sending hunt results to backend:', error);
             message.reply('***An error occurred while processing your request.***');
         }
     } else if (message.content === '2') {
-        message.reply(`***You are at ${place}***`);
-    }
-    else if(message.content === 'raid'){
-        message.reply(`***You are raiding ${place}***`);
-    }
-    else if (message.content === 'bank') {
+        message.reply(`***You are at ${places[0]}***`);
+    } else if (message.content === 'raid') {
+        message.reply(`***You are raiding ${places[0]}***`);
+    } else if (message.content === 'bank') {
         const userId = message.author.id;
 
         try {
             const response = await axios.get(`http://localhost:5000/getUserBankInfo/${userId}`);
-            const { pepos, gold , xp } = response.data;
-            message.reply(`***You have ${pepos} pepos and ${gold} gold in your vault with ${xp}xp***`);
+            const { pepos, gold, xp } = response.data;
+            message.reply(`***You have ${pepos} pepos and ${gold} gold in your vault with ${xp} xp***`);
         } catch (error) {
             console.error('Error fetching user bank info:', error);
             message.reply('***An error occurred while fetching your bank info.***');
         }
-    }
-    else if (message.content === 'fight'){
+    } else if (message.content === 'fight') {
         const fight1 = Math.floor(Math.random() * 10);
         message.reply(`***⚔️The fighter is getting ready⚔️***`);
-        if(fight1 == 1){
-            message.reply(`***You are fighting ${character1}***`);
+        if (fight1 >= 1 && fight1 <= characters.length) {
+            message.reply(`***You are fighting ${characters[fight1 - 1]}***`);
         }
-        else if (fight1 == 2){
-            message.reply(`***You are fighting ${character2}***`);
-        }
-        else if (fight1 == 3){
-            message.reply(`***You are fighting ${character3}***`);
-        }
-        else if (fight1 == 4){
-            message.reply(`***You are fighting ${character4}***`);
-        }
-        else if (fight1 == 5){
-            message.reply(`***You are fighting ${character5}***`);
-        }
-        else if (fight1 == 6){
-            message.reply(`***You are fighting ${character6}***`);
-        }
-        else if (fight1 == 7){
-            message.reply(`***You are fighting ${character7}***`);
-        }
-        else if (fight1 == 8){
-            message.reply(`***You are fighting ${character8}***`);
-        }
-        else if (fight1 == 9){
-            message.reply(`***You are fighting ${character9}***`);
-        }
-        else if (fight1 == 10){
-            message.reply(`***You are fighting ${character10}***`);
+    } else if (message.content === 'travel') {
+        const travel1 = Math.floor(Math.random() * places.length);
+        message.reply(`***🚢The ship is getting ready🚢***`);
+        if (travel1 >= 0 && travel1 < places.length) {
+            if (pepos < 100 || gold < 100) {
+            axios.post('http://localhost:5000/storeUserID', {
+                userId: message.author.id,
+                username: message.author.username,
+                pepos: -100,
+                gold: -5,
+                xp: 0,
+            });
+                message.reply(`***You are travelling to ${places[travel1]}***`);
+            } else {
+                message.reply(`***You don't have enough pepos or gold to travel***`);
+            }
         }
     }
 
     const userId = message.author.id;
+
     try {
         const response = await axios.get(`http://localhost:5000/getUserBankInfo/${userId}`);
-        const {  xp } = response.data;
-        if(xp >= 500){
+        const { xp } = response.data;
+        if (xp >= 1000 && xp < 1100) {
             message.reply(`***You reached level ${level + 1}***`);
         }
     } catch (error) {
         console.error('Error fetching user bank info:', error);
         message.reply('***An error occurred while fetching your bank info.***');
     }
-    
 });
-
 
 client.login(process.env.TOKEN);
