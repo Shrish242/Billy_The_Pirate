@@ -24,15 +24,16 @@ const userSchema = new mongoose.Schema({
     username: String,
     gold: { type: Number, default: 0 }, // Initialize default values
     pepos: { type: Number, default: 0 }, // Initialize default values
-    xp : { type: Number, default: 0 }
+    xp : { type: Number, default: 0 },
+    items : [String],
 });
 
 const User = mongoose.model('User', userSchema);
 
 // Create a route to handle incoming data from the Discord bot
 app.post('/storeUserID', async (req, res) => {
-    const { userId, username, gold, pepos , xp } = req.body;
-    console.log(userId, username, gold, pepos , xp);
+    const { userId, username, gold, pepos, xp, founditem } = req.body;
+    console.log(userId, username, gold, pepos, xp, founditem);
 
     try {
         let user = await User.findOne({ userid: userId });
@@ -43,7 +44,8 @@ app.post('/storeUserID', async (req, res) => {
                 username: username,
                 gold: gold,
                 pepos: pepos,
-                xp : xp
+                xp: xp,
+                items : [founditem],
             });
         } else {
             user.username = username;
@@ -52,6 +54,18 @@ app.post('/storeUserID', async (req, res) => {
                 user.gold += gold;
                 user.pepos += pepos;
                 user.xp += xp;
+                user.items = founditem;
+
+                // Check if user reached a new level
+                // const newLevel = Math.floor(user.xp / 10000);
+                // if (newLevel > user.level) {
+                //     user.level = newLevel;
+                // }
+
+                // Add the items to the user's items array
+                // if (Array.isArray(items)) {
+                //     user.items = user.items.concat(items);
+                // }
             } else {
                 // Handle invalid data here, such as returning an error response.
                 return res.status(400).json({ message: 'Invalid gold or pepos value' });
@@ -65,6 +79,7 @@ app.post('/storeUserID', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 app.get('/getUserBankInfo/:userId', async (req, res) => {
     const userId = req.params.userId;
 
