@@ -52,8 +52,6 @@ const items = [
     'Meat',
     'A ship',
     'A boat',
-    'A 5 storey ship',
-    'A 10 storey ship',
 ]
 
 const weapons = [
@@ -82,7 +80,7 @@ const devilfruit = [
     'A devil fruit: Gomu Gomu no Mi : Model Sun God',
     'A devil fruit: Bara Bara no Mi : Model Bear',
     'A devil fruit: Sube Sube no Mi : Model Slippery',
-    'A devil fruit: Bomu Bomu no Mi : Model Bomb', 
+    'A devil fruit: Bomu Bomu no Mi : Model Bomb',
     'A devil fruit: Kilo Kilo no Mi : Model Ton',
     'A devil fruit: Hana Hana no Mi : Sprout',
     'A devil fruit: Doru Doru no Mi : Wax',
@@ -97,14 +95,14 @@ const rareitems = [
     'Healing Potion',
     'A treasure',
     '100M chest',
+    'A 5 storey ship',
+    'A 10 storey ship',
 
 ]
 
-const rarestofall =[
+const rarestofall = [
     'Final Treasure',
 ]
-
-
 
 // Define a cooldown map to keep track of user cooldowns
 const cooldowns = new Map();
@@ -117,9 +115,7 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) return; // Ignore messages from bots
 
     if (message.content === 'Set Sail') {
-        message.reply('***Get ready to set sail. We are going for an adventure!***');
-        message.reply('***1. Login into your username***');
-        message.reply('***2. Continue your journey***');
+        message.reply(`***You are ready to sail ${message.author.username}***`);
     } else if (message.content === '1') {
         // Send userId and username to your backend server
         const userId = message.author.id;
@@ -188,24 +184,71 @@ client.on('messageCreate', async (message) => {
         if (fight1 >= 1 && fight1 <= characters.length) {
             message.reply(`***You are fighting ${characters[fight1 - 1]}***`);
         }
-    } else if (message.content === 'travel') {
+    } 
+    else if (message.content === 'travel') {
         const travel1 = Math.floor(Math.random() * places.length);
         message.reply(`***🚢The ship is getting ready🚢***`);
         if (travel1 >= 0 && travel1 < places.length) {
             if (pepos < 100 || gold < 100) {
-            axios.post('http://localhost:5000/storeUserID', {
-                userId: message.author.id,
-                username: message.author.username,
-                pepos: -100,
-                gold: -5,
-                xp: 0,
-            });
+                axios.post('http://localhost:5000/storeUserID', {
+                    userId: message.author.id,
+                    username: message.author.username,
+                    pepos: -100,
+                    gold: -5,
+                    xp: 0,
+                });
                 message.reply(`***You are travelling to ${places[travel1]}***`);
             } else {
                 message.reply(`***You don't have enough pepos or gold to travel***`);
             }
         }
     }
+    else if ( message.content === 'explore'){
+        const explore1 = Math.floor(Math.random() * 600);
+        if(explore1 >= 0 && explore1 < 10){
+            exploreitems = Math.floor(Math.random() * items.length);
+        if(exploreitems >= 0 && exploreitems < items.length){     
+            message.reply(`***You found ${items[exploreitems]}***`);
+        }
+        }
+        else if(explore1 >= 10 && explore1 < 20){
+            exploreweapons = Math.floor(Math.random() * weapons.length);
+        if(exploreweapons >= 0 && exploreweapons < weapons.length){
+            message.reply(`***You found ${weapons[exploreweapons]}***`);
+        }
+        }
+        else if(explore1 >= 20 && explore1 < 30){
+            explorecrewmember = Math.floor(Math.random() * crewmember.length);
+        if(explorecrewmember >= 0 && explorecrewmember < crewmember.length){
+            message.reply(`***You found ${crewmember[explorecrewmember]}***`);
+        }
+        }
+        else if(explore1 >= 30 && explore1 < 40){
+            exploredf = Math.floor(Math.random() * devilfruit.length);
+        if(exploredf >= 0 && exploredf < devilfruit.length){
+            message.reply(`***You found ${devilfruit[exploredf]}***`);
+        }
+    }
+        else if(explore1 >= 40 && explore1 < 50){
+            explorerareitems = Math.floor(Math.random() * rareitems.length);
+        if(explorerareitems >= 0 && explorerareitems < rareitems.length){
+            message.reply(`***You found ${rareitems[explorerareitems]}***`);
+        }
+    }
+        else if(explore1 >= 50 && explore1 < 60){
+            explorerarestofall = Math.floor(Math.random() * rarestofall.length);
+        if(explorerarestofall >= 0 && explorerarestofall < rarestofall.length){
+            message.reply(`***You found ${rarestofall[explorerarestofall]}***`);
+        }
+    }
+    else if(explore1 >= 60 && explore1 < 100){
+        message.reply(`***You found 200 pepos***`);
+    }
+        else {
+            message.reply(`***You found nothing***`);
+        }
+    }
+
 
     const userId = message.author.id;
 
