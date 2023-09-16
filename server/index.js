@@ -26,13 +26,14 @@ const userSchema = new mongoose.Schema({
     pepos: { type: Number, default: 0 }, // Initialize default values
     xp : { type: Number, default: 0 },
     items : [String],
+    location : String,
 });
 
 const User = mongoose.model('User', userSchema);
 
 // Create a route to handle incoming data from the Discord bot
 app.post('/storeUserID', async (req, res) => {
-    const { userId, username, gold, pepos, xp, founditem } = req.body;
+    const { userId, username, gold, pepos, xp, founditem, location } = req.body;
     console.log(userId, username, gold, pepos, xp, founditem);
 
     try {
@@ -46,6 +47,7 @@ app.post('/storeUserID', async (req, res) => {
                 pepos: pepos,
                 xp: xp,
                 items : [founditem],
+                location : location,
             });
         } else {
             user.username = username;
@@ -54,19 +56,14 @@ app.post('/storeUserID', async (req, res) => {
                 user.gold += gold;
                 user.pepos += pepos;
                 user.xp += xp;
-                user.items = founditem;
-
-                // Check if user reached a new level
-                // const newLevel = Math.floor(user.xp / 10000);
-                // if (newLevel > user.level) {
-                //     user.level = newLevel;
-                // }
-
-                // Add the items to the user's items array
-                // if (Array.isArray(items)) {
-                //     user.items = user.items.concat(items);
-                // }
-            } else {
+                user.location = location;
+            
+                // Only push founditem if it is not null or an empty string
+                if (founditem !== null && founditem !== "") {
+                    user.items.push(founditem);
+                }
+            }
+             else {
                 // Handle invalid data here, such as returning an error response.
                 return res.status(400).json({ message: 'Invalid gold or pepos value' });
             }
@@ -98,6 +95,41 @@ app.get('/getUserBankInfo/:userId', async (req, res) => {
     }
 });
 
+app.get('/getUserItems/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try{
+        const user = await User.findOne({ userid: userId });
+        if(!user){
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const { items } = user;
+        res.status(200).json({ items });
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Move this route handler to the top level
+app.get('/getUserLocation/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await User.findOne({ userid: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const location = user.location || null; // Retrieve the location or set it to null if not found
+
+        res.status(200).json({ location });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 app.listen(5000, () => {
     console.log('Server running on port 5000');
